@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能垃圾分类助手 - 高级版</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 主标题区域 -->
+        <div class="header-section">
+            <h1 class="main-title">🗑️ 智能垃圾分类助手</h1>
+            <p class="subtitle">基于AI的智能垃圾分类系统</p>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 左侧输入控制面板 -->
+            <div class="control-panel glass-panel">
+                <h2 class="panel-title">📁 输入设置</h2>
+                
+                <!-- 输入类型选择 -->
+                <div class="input-group">
+                    <label class="input-label">输入类型</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="inputType" value="image" checked>
+                            <span>🖼️ 图片</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="inputType" value="video">
+                            <span>🎬 视频</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="inputType" value="webcam">
+                            <span>📷 摄像头</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 文件上传区域 -->
+                <div class="input-group">
+                    <label class="input-label">文件上传</label>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="upload-content">
+                            <div class="upload-icon">📤</div>
+                            <div class="upload-text">点击或拖拽文件到此处</div>
+                            <div class="upload-hint">支持图片、视频格式</div>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- 摄像头预览区域 -->
+                <div class="input-group" id="webcamGroup" style="display: none;">
+                    <label class="input-label">实时摄像头</label>
+                    <div class="webcam-container">
+                        <video id="webcamVideo" autoplay playsinline></video>
+                        <div class="webcam-placeholder">摄像头未启动</div>
+                    </div>
+                </div>
+
+                <!-- 模型参数设置 -->
+                <div class="section-divider"></div>
+                <h2 class="panel-title">🛠️ 模型参数</h2>
+
+                <div class="input-group">
+                    <label class="input-label">模型选择</label>
+                    <select class="glass-select" id="modelSelect">
+
+                        <option value="best.pt">自定义模型</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">图像尺寸: <span id="imageSizeValue">640</span></label>
+                    <input type="range" class="glass-slider" id="imageSize" min="320" max="1280" step="32" value="640">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">置信度阈值: <span id="confValue">0.25</span></label>
+                    <input type="range" class="glass-slider" id="confThreshold" min="0" max="1" step="0.05" value="0.25">
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="button-group">
+                    <button class="glass-button primary" id="detectBtn">
+                        <span class="btn-icon">🚀</span>
+                        <span class="btn-text">开始垃圾分类</span>
+                    </button>
+                    <button class="glass-button secondary" id="webcamBtn" style="display: none;">
+                        <span class="btn-icon">📷</span>
+                        <span class="btn-text">开启实时检测</span>
+                    </button>
+                </div>
+
+                <!-- 示例区域 -->
+<!--                <div class="section-divider"></div>-->
+<!--                <h2 class="panel-title">💡 示例图片</h2>-->
+<!--                <div class="examples-grid">-->
+<!--                    <div class="example-item" data-example="bus">-->
+<!--                        <div class="example-placeholder">🚌</div>-->
+<!--                        <div class="example-label">公交车</div>-->
+<!--                    </div>-->
+<!--                    <div class="example-item" data-example="zidane">-->
+<!--                        <div class="example-placeholder">👔</div>-->
+<!--                        <div class="example-label">人物</div>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+
+            <!-- 右侧结果展示面板 -->
+            <div class="result-panel glass-panel">
+                <h2 class="panel-title">📊 垃圾检测</h2>
+                
+                <!-- 结果图片/视频展示 -->
+                <div class="result-media">
+                    <div class="media-container" id="resultMediaContainer">
+                        <div class="media-placeholder">
+                            <div class="placeholder-icon">🖼️</div>
+                            <div class="placeholder-text">检测结果将显示在这里</div>
+                        </div>
+                        <img id="resultImage" style="display: none; width: 100%; border-radius: 12px; max-height: 500px; object-fit: contain;">
+                        <video id="resultVideo" controls playsinline preload="auto" style="display: none; width: 100%; border-radius: 12px; max-height: 500px; background: #000;"></video>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 分类详情 -->
+                <h2 class="panel-title">📋 分类详情</h2>
+                <div class="result-textbox" id="detectionResult">
+                    <div class="result-placeholder">检测结果详情将显示在这里...</div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 类别统计 -->
+                <h2 class="panel-title">📈 类别统计</h2>
+                <div class="result-textbox" id="categorySummary">
+                    <div class="result-placeholder">统计信息将显示在这里...</div>
+                </div>
+
+                <!-- 加载状态 -->
+                <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                    <div class="loading-content">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">正在处理中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="instruction-section glass-panel">
+            <h2 class="panel-title">📝 使用说明</h2>
+            <div class="instruction-content">
+                <ol>
+                    <li>选择输入类型（图片/视频/摄像头）</li>
+                    <li>上传文件或启用摄像头</li>
+                    <li>设置模型参数（可选）</li>
+                    <li>点击"开始垃圾分类"按钮进行检测</li>
+                    <li>查看检测结果和分类详情</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 通知提示 -->
+        <div class="notification" id="notification">
+            <div class="notification-content">
+                <span class="notification-icon">ℹ️</span>
+                <span class="notification-text">通知内容</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
